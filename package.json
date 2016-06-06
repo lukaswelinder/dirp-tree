@@ -1,0 +1,22 @@
+{
+  "name": "dirp-tree",
+  "version": "0.0.1",
+  "description": "Filetree generator.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fs",
+    "mkdirp",
+    "mkdir",
+    "build",
+    "tools",
+    "generator"
+  ],
+  "author": "lukaswelinder",
+  "license": "MIT",
+  "dependencies": {
+    "mkdirp": "^0.5.1"
+  }
+}
