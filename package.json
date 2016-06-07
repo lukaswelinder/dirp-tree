@@ -16,6 +16,10 @@
   ],
   "author": "lukaswelinder",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukaswelinder/dirp-tree.git"
+  },
   "dependencies": {
     "mkdirp": "^0.5.1"
   }

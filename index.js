@@ -32,7 +32,7 @@ const root_dir = path.join(__dirname, '../../');
  */
 const dirp_file = (file, dir_path) => {
   let file_path = path.join(dir_path,file.name||file);
-  let write_stream = fs.createWriteStream(file_path, {flags: 'wx'});
+  let write_stream = fs.createWriteStream(file_path, {flags: 'w'});
   if(file.src)
     fs.createReadStream(path.join(root_dir,file.src)).pipe(write_stream);
   return write_stream;
