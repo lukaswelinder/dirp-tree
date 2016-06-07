@@ -12,6 +12,7 @@ How it works:
 4. ?
 5. Profit
 
+---
 
 The dirp-tree will accept two optional arguments, the first is an object that defines the structure of your dirp-tree(example below), the second is a string representing the absolute path in which your dirp-tree will be planted.
 
