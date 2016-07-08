@@ -1,15 +1,37 @@
 const fs = require('fs');
 const path = require('path');
+const stream = require('stream');
 const mkdirp = require('mkdirp');
-const config = require('./dirptree.config');
 
-/**
+
+/*
  * root_dir - absolute path to location of
  * node_modules folder (ie project root folder)
- * 
+ *
  * @type {[string]}
  */
 const root_dir = path.join(__dirname, '../../');
+
+/*
+ * config - IIFE checks if file 'dirptree.config.js' exists
+ * in project root-directory, if it does not, loads default from
+ * package
+ *
+ * @return {[stream]} write_stream
+ */
+const config = (function loadConfig(filepath) {
+  let cfi_path = path.join(root_dir, filepath || 'dirptree.config.js');
+  let cfi = null;
+  try {
+    fs.statSync(cfi_path);
+    return require.resolve(cfi_path);
+  } catch(err) {
+    return require.resolve('./dirptree.config')
+  }
+})();
+// TODO: apply 'loadConfig()' as prototype of the export to allow custom config locations
+
+
 
 /*
  * dirp_file - internal API used to create file and/or pipe
@@ -53,10 +75,10 @@ const dirp_file = (file, dir_path) => {
  *
  * @return {[stream]} mkdirp     currently does nothing as far as functionality
  */
-const dirp_tree = function(dir_tree,root_path) {
+const dirp_tree = function(dir_tree, root_path) {
   dir_tree = dir_tree || config;
   root_path = root_path || root_dir;
-  let dir_path = path.join(root_path,dir_tree.name);
+  let dir_path = path.join(root_path, dir_tree.name);
   return mkdirp(dir_path, (err, path) => {
     if(err)
       return err;
