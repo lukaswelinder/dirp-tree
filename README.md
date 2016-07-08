@@ -2,6 +2,13 @@ DIRP-TREE
 =========
 *easy to use filetree generator*
 
+NOTE: dirptree is in an early/development state; expect breaking changes until the first major version `1.0.0`.
+
+TODO:
+* [feat] allow for callback on directory-creation-completion
+* [feat] complete implementation of file-contents sourcing
+* [design] consider implementation of vinyl streams (gulp support)
+
 ---
 
 How it works:
