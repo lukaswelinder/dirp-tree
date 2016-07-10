@@ -1,6 +1,10 @@
+// 'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const stream = require('stream');
+
+const co = require('co');
 const mkdirp = require('mkdirp');
 
 
@@ -23,9 +27,9 @@ const CONFIG = (function loadConfig(fp) {
   let cfi_path = path.join(ROOT_DIR, fp || 'dirptree.CONFIG.js');
   try {
     fs.statSync(cfi_path);
-    return require.resolve(cfi_path);
+    return require(cfi_path);
   } catch(err) {
-    return require.resolve('./dirptree.CONFIG')
+    return require('./dirptree.CONFIG');
   }
 })();
 // TODO: apply 'loadConfig()' as prototype of the export to allow custom CONFIG locations
@@ -39,10 +43,8 @@ const CONFIG = (function loadConfig(fp) {
  * behaves accordingly
  * 
  * @param  {[object || string]} file       file to be created as a writestream,
- *                                         if it is an object with an 'src' property
- *                                         then it is piped to from that file; src is
- *                                         a relative path from the location of the
- *                                         node_modules folder
+ *                                         'src' property defines a file to pipe from
+ *                                         relative to the project root (loc of node_modules)
  * 
  * @param  {[string]} dir_path            directory path from root into which the
  *                                        file will be created
@@ -51,18 +53,29 @@ const CONFIG = (function loadConfig(fp) {
  *                                        currently unused, future implementation of
  *                                        promises and/or vinyl streams for gulp planned
  */
-const dirp_file = (file, dir_path) => {
-  let file_path = path.join(dir_path,file.name||file);
-  let write_stream = fs.createWriteStream(file_path, {flags: 'a+'});
-  if(file.src)
-    fs.createReadStream(path.join(ROOT_DIR,file.src)).pipe(write_stream);
-  return write_stream;
-};
+const dirp_file = (file, dir_path) => 
+  new Promise(function(resolve, reject) {
+    try {
+      let file_path = path.join(dir_path,file.name||file);
+      let write_stream = fs.createWriteStream(file_path, {flags: 'a+'});
+      if(file.src)
+        fs.createReadStream(path.join(ROOT_DIR,file.src)).pipe(write_stream);
+      resolve(write_stream);
+    } catch(err) {
+      reject(err);
+    }
+  });
+
+
+// const dirp_dirs = (dir_tree, dir_path) => {
+//
+//
+// };
 
 /*
  *  dirp_tree - filetree generator directly exported from module;
- *  currently the return value has no funcitonality, implementation
- *  of promises planned
+ *  currently the return value has no functionality, implementation
+ *  of promises or streams planned
  * 
  * @param  {[object]} dir_tree   object from which the directory tree will
  *                               be constructed, formatting documentation
@@ -78,13 +91,19 @@ const dirp_tree = function(dir_tree, root_path) {
   dir_tree = dir_tree || CONFIG;
   root_path = root_path || ROOT_DIR;
   let dir_path = path.join(root_path, dir_tree.name);
-  return mkdirp(dir_path, (err, path) => {
-    if(err)
-      return err;
-    if(dir_tree.paths)
-      dir_tree.paths.forEach((dir) => dirp_tree(dir,dir_path));
-    if(dir_tree.files)
-      dir_tree.files.forEach((file) => dirp_file(file,dir_path));
+  return new Promise (function(resolve,reject) {
+    mkdirp(dir_path, (err, path) => {
+      if(err)
+        reject(err);
+      if(dir_tree.paths)
+        co(function*(){
+          return yield dir_tree.paths.map((tree) => dirp_tree(tree, dir_path));
+        });
+      if(dir_tree.files)
+        co(function*(){
+          return yield dir_tree.files.map((file) => dirp_file(file, dir_path));
+        }).then((args) => console.log(args));
+    });
   });
 };
 
