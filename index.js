@@ -5,31 +5,30 @@ const mkdirp = require('mkdirp');
 
 
 /*
- * root_dir - absolute path to location of
+ * ROOT_DIR - absolute path to location of
  * node_modules folder (ie project root folder)
  *
  * @type {[string]}
  */
-const root_dir = path.join(__dirname, '../../');
+const ROOT_DIR = path.join(__dirname, '../../');
 
 /*
- * config - IIFE checks if file 'dirptree.config.js' exists
+ * CONFIG - IIFE checks if file 'dirptree.CONFIG.js' exists
  * in project root-directory, if it does not, loads default from
  * package
  *
  * @return {[stream]} write_stream
  */
-const config = (function loadConfig(filepath) {
-  let cfi_path = path.join(root_dir, filepath || 'dirptree.config.js');
-  let cfi = null;
+const CONFIG = (function loadConfig(fp) {
+  let cfi_path = path.join(ROOT_DIR, fp || 'dirptree.CONFIG.js');
   try {
     fs.statSync(cfi_path);
     return require.resolve(cfi_path);
   } catch(err) {
-    return require.resolve('./dirptree.config')
+    return require.resolve('./dirptree.CONFIG')
   }
 })();
-// TODO: apply 'loadConfig()' as prototype of the export to allow custom config locations
+// TODO: apply 'loadConfig()' as prototype of the export to allow custom CONFIG locations
 
 
 
@@ -56,7 +55,7 @@ const dirp_file = (file, dir_path) => {
   let file_path = path.join(dir_path,file.name||file);
   let write_stream = fs.createWriteStream(file_path, {flags: 'a+'});
   if(file.src)
-    fs.createReadStream(path.join(root_dir,file.src)).pipe(write_stream);
+    fs.createReadStream(path.join(ROOT_DIR,file.src)).pipe(write_stream);
   return write_stream;
 };
 
@@ -67,8 +66,8 @@ const dirp_file = (file, dir_path) => {
  * 
  * @param  {[object]} dir_tree   object from which the directory tree will
  *                               be constructed, formatting documentation
- *                               can be found in dirptree.config.js,
- *                               defaults to the obj in the config file
+ *                               can be found in dirptree.CONFIG.js,
+ *                               defaults to the obj in the CONFIG file
  *                               
  * @param  {[string]} root_path  absolute path of location to place dir_tree,
  *                               defaults to location of node_modules folder
@@ -76,8 +75,8 @@ const dirp_file = (file, dir_path) => {
  * @return {[stream]} mkdirp     currently does nothing as far as functionality
  */
 const dirp_tree = function(dir_tree, root_path) {
-  dir_tree = dir_tree || config;
-  root_path = root_path || root_dir;
+  dir_tree = dir_tree || CONFIG;
+  root_path = root_path || ROOT_DIR;
   let dir_path = path.join(root_path, dir_tree.name);
   return mkdirp(dir_path, (err, path) => {
     if(err)
