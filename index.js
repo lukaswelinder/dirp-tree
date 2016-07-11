@@ -1,4 +1,4 @@
-// 'use strict';
+'use strict';
 
 const fs = require('fs');
 const path = require('path');
@@ -24,9 +24,8 @@ const ROOT_DIR = path.join(__dirname, '../../');
  * @return {[stream]} write_stream
  */
 const CONFIG = (function loadConfig(fp) {
-  let cfi_path = path.join(ROOT_DIR, fp || 'dirptree.CONFIG.js');
+  let cfi_path = path.join(ROOT_DIR, fp || 'dirptree.config.js');
   try {
-    fs.statSync(cfi_path);
     return require(cfi_path);
   } catch(err) {
     return require('./dirptree.CONFIG');
@@ -34,7 +33,15 @@ const CONFIG = (function loadConfig(fp) {
 })();
 // TODO: apply 'loadConfig()' as prototype of the export to allow custom CONFIG locations
 
-
+const mkdirp_p = (dir_path) =>
+  new Promise(function(resolve, reject) {
+    mkdirp(dir_path, (err, path) => {
+      if(err)
+        reject(err);
+      else
+        resolve(path);
+    });
+  });
 
 /*
  * dirp_file - internal API used to create file and/or pipe
@@ -56,7 +63,7 @@ const CONFIG = (function loadConfig(fp) {
 const dirp_file = (file, dir_path) => 
   new Promise(function(resolve, reject) {
     try {
-      let file_path = path.join(dir_path,file.name||file);
+      let file_path = path.join(dir_path, file.name || file);
       let write_stream = fs.createWriteStream(file_path, {flags: 'a+'});
       if(file.src)
         fs.createReadStream(path.join(ROOT_DIR,file.src)).pipe(write_stream);
@@ -67,10 +74,18 @@ const dirp_file = (file, dir_path) =>
   });
 
 
-// const dirp_dirs = (dir_tree, dir_path) => {
-//
-//
-// };
+const dirp_dir_rec = (dir_tree, root_path) => {
+  let dir_path = path.join(root_path, dir_tree.name || dir_tree);
+  let p = mkdirp_p(dir_path);
+  return co(function*(){
+    yield p;
+    if(dir_tree.paths)
+      var rec = yield dir_tree.paths.map((tree) => dirp_dir_rec(tree, dir_path));
+    if(dir_tree.files)
+      var ret = yield dir_tree.files.map((file) => dirp_file(file, dir_path));
+    return [].concat(rec, ret);
+  });
+};
 
 /*
  *  dirp_tree - filetree generator directly exported from module;
@@ -91,19 +106,8 @@ const dirp_tree = function(dir_tree, root_path) {
   dir_tree = dir_tree || CONFIG;
   root_path = root_path || ROOT_DIR;
   let dir_path = path.join(root_path, dir_tree.name);
-  return new Promise (function(resolve,reject) {
-    mkdirp(dir_path, (err, path) => {
-      if(err)
-        reject(err);
-      if(dir_tree.paths)
-        co(function*(){
-          return yield dir_tree.paths.map((tree) => dirp_tree(tree, dir_path));
-        });
-      if(dir_tree.files)
-        co(function*(){
-          return yield dir_tree.files.map((file) => dirp_file(file, dir_path));
-        }).then((args) => console.log(args));
-    });
+  return co(function*(){
+    return yield dirp_dir_rec(dir_tree, dir_path);
   });
 };
 
