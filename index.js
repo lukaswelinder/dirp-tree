@@ -77,13 +77,16 @@ const dirp_file = (file, dir_path) =>
 const dirp_dir_rec = (dir_tree, root_path) => {
   let dir_path = path.join(root_path, dir_tree.name || dir_tree);
   let p = mkdirp_p(dir_path);
+  let rec, ret;
   return co(function*(){
     yield p;
     if(dir_tree.paths)
-      var rec = yield dir_tree.paths.map((tree) => dirp_dir_rec(tree, dir_path));
-    if(dir_tree.files)
-      var ret = yield dir_tree.files.map((file) => dirp_file(file, dir_path));
-    return [].concat(rec, ret);
+      rec = yield dir_tree.paths.map((tree) => dirp_dir_rec(tree, dir_path));
+    else rec = [];
+    if(rec && dir_tree.files)
+      ret = yield dir_tree.files.map((file) => dirp_file(file, dir_path));
+    else ret = [];
+    return yield [].concat(...rec, ret);
   });
 };
 
@@ -105,9 +108,8 @@ const dirp_dir_rec = (dir_tree, root_path) => {
 const dirp_tree = function(dir_tree, root_path) {
   dir_tree = dir_tree || CONFIG;
   root_path = root_path || ROOT_DIR;
-  let dir_path = path.join(root_path, dir_tree.name);
   return co(function*(){
-    return yield dirp_dir_rec(dir_tree, dir_path);
+    return yield dirp_dir_rec(dir_tree, root_path);
   });
 };
 
