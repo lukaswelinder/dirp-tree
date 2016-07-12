@@ -1,7 +1,7 @@
 {
   "name": "dirp-tree",
-  "version": "0.0.3",
-  "description": "Filetree generator.",
+  "version": "0.0.4",
+  "description": "Powerful, Async Filetree Generator.",
   "main": "index.js",
   "scripts": {
     "test": "node test.js"
