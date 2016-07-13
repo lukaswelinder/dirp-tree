@@ -10,9 +10,10 @@
     "fs",
     "mkdirp",
     "mkdir",
-    "build",
-    "tools",
-    "generator"
+    "build tool",
+    "utility",
+    "generator",
+    "stream"
   ],
   "author": "lukaswelinder",
   "license": "MIT",
