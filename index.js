@@ -19,10 +19,10 @@ const ROOT_DIR = path.join(__dirname, '../../');
  * in project root-directory, if it does not, loads default from
  * package
  * 
- * @param  {[string]} file_path         TBD -- see TODO below
+ * @param  {[string]} file_path           TBD -- see TODO below
  *
- * @return {[module]} CONFIG            returns loaded configuration file in project-
- *                                      root directory OR module default
+ * @return {[module]} CONFIG              returns loaded configuration file in project-
+ *                                        root directory OR module default
  */
 const CONFIG = (function loadConfig(file_path) {
   let cfi_path = path.join(ROOT_DIR, file_path || 'dirptree.config.js');
@@ -32,18 +32,18 @@ const CONFIG = (function loadConfig(file_path) {
     return require('./dirptree.config.js');
   }
 })();
-// TODO: apply 'loadConfig()' as prototype of the export to allow custom CONFIG locations
+// :TODO: apply 'loadConfig()' as prototype of the export to allow custom CONFIG locations
 
 /*
  * mkdirp_p - promisified mkdirp module, recursively runs mkdir 
  * command to create multiple directories from strings like 'foo/bar'
  * 
- * @param  {[string]} dir_path          directory path to create directory(ies) from;
- *                                      the string 'foo/bar' would result in creating
- *                                      directory 'foo' in PWD and 'bar' inside of 'foo'
+ * @param  {[string]} dir_path            directory path to create directory(ies) from;
+ *                                        the string 'foo/bar' would result in creating
+ *                                        directory 'foo' in PWD and 'bar' inside of 'foo'
  *
- * @return {[promise]} err/path         returns promise that resolves with the root-path
- *                                      that was created or rejects with an error
+ * @return {[promise]} err/path           returns promise that resolves with the root-path
+ *                                        that was created or rejects with an error
  */
 const mkdirp_p = (dir_path) =>
   new Promise(function(resolve, reject) {
@@ -87,7 +87,7 @@ const dirp_file = (file, dir_path) =>
 
 /*
  *  dirp_dir_rec - recursively creates directory-tree
- *  breadth-first, then creates/pipes to files depth first;
+ *  breadth-first, then creates/pipes-to files depth first;
  *  returns an array of streams ordered depth first to comply
  *  with TDD of dependencies when used for concatenation/bundling
  * 
@@ -126,8 +126,9 @@ const dirp_dir_rec = function(dir_tree, root_path) {
  *
  * @return {[stream]} dirp_dir_rec        currently does nothing as far as functionality
  */
-module.exports = function(dir_tree, root_path) {
+module.exports = function dirp_tree(dir_tree, root_path) {
   dir_tree = dir_tree || CONFIG;
   root_path = root_path || ROOT_DIR;
   return dirp_dir_rec(dir_tree, root_path);
 };
+// :TODO: design intended public API methods on 'dirp_tree' prototype
