@@ -5,10 +5,10 @@ DIRP-TREE
 NOTE: dirptree is in an early/development state; expect breaking changes until the first major version, `1.0.0`.
 
 v`0.1.0` TODO:
-* [feat] allow for callback/transform on streams:
+* [feat] allow for callback~~/transform~~ in config-object:
     * path-filled: [design] ? array of streams : concatenated stream
     * file-created: stream
-* [chore] extensive testing and benchmarking
+* [chore] extensive testing and benchmarking (pushed to `0.1.X`)
 * ~~[feat] complete implementation of file-contents sourcing~~ DONE
 * ~~[feat] complete implementation of return value~~ DONE
     * ~~return promise on completion~~
