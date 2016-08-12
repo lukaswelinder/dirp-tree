@@ -4,18 +4,19 @@ DIRP-TREE
 
 NOTE: dirptree is in an early/development state; expect breaking changes until the first major version, `1.0.0`.
 
-v`0.1.0` TODO:
-* [feat] allow for callback~~/transform~~ in config-object:
-    * path-filled: [design] ? array of streams : concatenated stream
-    * file-created: stream
-* [chore] extensive testing and benchmarking (pushed to `0.1.X`)
-* ~~[feat] complete implementation of file-contents sourcing~~ DONE
-* ~~[feat] complete implementation of return value~~ DONE
-    * ~~return promise on completion~~
-    * ~~pass array of streams to `.then()`~~
-* ~~[design] consider implementation of vinyl streams~~ HOLD
+v`0.2.0` TODO:
+* [feat] allow for callback in file object
+* [feat] allow optional file write tag
+    - for path & file in their respective objects
+* [feat] implement a `.copy()` method
+* [chore] extensive testing (and benchmarking ?)
+* [refactor] implement `mkdirp` to reduce dependencies
+* [doc] improve documentation on config object structure
 
-##What is dirp-tree???
+
+---
+
+###What is dirp-tree???
 
 This module is essentially a very fast file-tree generator; it uses async and parallel control flow, to first create directories in breadth-first order, then fill those directories depth-first.
  
